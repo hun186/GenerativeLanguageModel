@@ -130,3 +130,5 @@ receipt、失聯結果或 Meter 失敗 fail closed，保留 RUNNING/Success 證�
 - WEB-05A: one shared aggregation formula, permissive desktop legacy mode and strict privacy-safe Web projection; no fabricated native phase or cache measurements.
 
 - WEB-05B2: use fixed producer SSE suffix; do not impute zeros or mix native and client timings. #390 is canonical candidate, #389 alternative remains unmerged.
+
+- WEB-05C1: reuse complete logical CSV framing and canonical path checks; no partial percentiles. Prefer exact bounded statistics to undisclosed sampling; later approximation must explicitly identify error/coverage.

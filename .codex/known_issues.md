@@ -156,3 +156,5 @@ Sink ACK 與正式 Producer 壓力測試。Python Thread 不能安全強制終�
 - WEB-05A: 8 MiB/20k bound and full snapshot reparse limit; large Audit incremental #391 pending. Actual Linux/GPU/ES/SQL acceptance not established.
 
 - WEB-05B2: no provider-native prefill/decode, no GPU inference, no physical long-context timing acceptance; coverage of all calls is not SSE success rate.
+
+- WEB-05C1: exact retained samples/sorting are bounded, not constant memory/time; >200k rows/512 MiB or group limit fail closed. Physical stress test and continuous-writer behavior remain unverified.

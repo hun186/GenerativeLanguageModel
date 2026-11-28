@@ -172,3 +172,5 @@ confirm_writeback 閘門。Linux process pool、多階段仍為原來路徑；
 - WEB-05A: audit_distribution.py shared numeric aggregation; desktop permissive legacy reader retained, Web background DocumentMonitor publishes separate bounded Audit snapshot from trusted IPC locator. Strict reader validates CSV width/outcomes; only allowlisted numeric metrics, no raw identities. Audit can be observed without a document Meter.
 
 - WEB-05B2: shared Audit distributions validate completed SSE timing source and tuple consistency, track observed/unreported/invalid/no-text separately; desktop summary and Web numeric table use same percentile logic. Historical rows remain compatible; no provider native phase inference.
+
+- WEB-05C1: shared AuditAccumulator; incremental reader retains numeric samples and hashed template groups, consumes complete CSV records, verifies file generation/checkpoint and suppresses incomplete results. Background reader caches complete snapshots. Desktop full snapshot behavior retained.

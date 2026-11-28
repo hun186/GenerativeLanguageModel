@@ -130,3 +130,5 @@
 - WEB-05A #387: #386 merged `96c03ae` after CI 45993004041, scan 45993004027 and clean review. Shared desktop/Web Audit distributions; strict Web bounded snapshot rejects malformed outcome, incomplete CSV or unsafe file. Previous #387 CI 45955087540/scan 45955087542 and exact-head review passed. New main integration pending fresh gates; no physical performance validation.
 
 - WEB-05B2 #390: #387 merged `ee29524` after CI 46114030025, scan 46114030027 and clean exact-head review. #390 reads accepted #388 SSE metadata into shared distributions, prior CI 45974649806/scan 45974649835 and review passed. Selected #390 over overlapping #389 because subsequent incremental/quality stack is based on #390. Fresh gates pending; physical timing unverified.
+
+- WEB-05C1 #391: #390 merged `98641a9` after CI 46120057133, scan 46120057141 and clean review. Incremental exact Audit aggregation with verified cursor, cache and bounded state. Previous CI 45980618463/scan 45980619710 and review passed. Fresh integration gates pending; physical large-run performance unverified.

@@ -110,7 +110,9 @@ function showAudit(audit) {
   coverage.textContent = '';
   streamBody.replaceChildren();
   if (audit?.status !== 'observed') {
-    status.textContent = 'Audit 尚未取得、逾時、交接不完整或超過讀取預算';
+    status.textContent = audit?.status === 'catching_up' ?
+      'Audit 增量讀取中：' + audit.scanned_bytes + '/' + audit.total_bytes + ' bytes；尚非完整統計' :
+      'Audit 尚未取得、逾時、交接不完整或超過讀取預算';
     return;
   }
   status.textContent = '呼叫 ' + audit.calls + ' 次；失敗 ' + audit.failures +

@@ -161,3 +161,5 @@
 - [ ] WEB-05A #387 fresh integration gates; then #390 SSE distributions, #391 incremental, #392 grouped comparisons, WEB-06 quality.
 
 - [ ] #390 fresh integration gates; then #391 incremental and #392/#393. Do not merge duplicate #389; native phases and live acceptance pending.
+
+- [ ] #391 fresh gates; then #392 groups/#393 quality/#394 repair. Larger exact/approximate aggregate and physical pressure tests pending.

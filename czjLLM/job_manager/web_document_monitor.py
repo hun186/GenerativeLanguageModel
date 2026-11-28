@@ -15,7 +15,7 @@ from czjLLM.job_manager.document_progress import (
     capture_activity_clock, format_activity_clock,
 )
 from czjLLM.job_manager.worker_dispatch_observation import read_visible_dispatch_observations
-from czjLLM.job_manager.audit_distribution import load_public_audit
+from czjLLM.job_manager.audit_distribution_incremental import IncrementalAuditReader
 
 REFRESH_SECONDS = 2.0
 MAX_AGE_SECONDS = 8.0
@@ -115,6 +115,7 @@ class DocumentMonitor:
         self._view = {"status": "waiting_for_meter", "rows": []}
         self._audit = {"status": "waiting_for_audit"}
         self._audit_observed_at = None
+        self._audit_reader = IncrementalAuditReader()
 
     def set_path(self, path):
         if not isinstance(path, str) or len(path) > 4096 or "\x00" in path:
@@ -137,10 +138,12 @@ class DocumentMonitor:
                 self._view = {"status": "waiting_for_meter", "rows": []}
                 self._audit = {"status": "waiting_for_audit"}
                 self._audit_observed_at = None
+                self._audit_reader = IncrementalAuditReader()
 
     def refresh_once(self):
         with self._lock:
             path, audit_path, generation = self._path, self._audit_path, self._generation
+            reader = self._audit_reader
         started = self._clock()
         try:
             view = (project_public_documents(read_meter_strict(path), self._salt,
@@ -152,7 +155,7 @@ class DocumentMonitor:
             # No exception details, stale rows, or synthetic successful empty run.
             view = {"status": "unavailable", "rows": []}
         audit_started = self._clock()
-        audit = load_public_audit(audit_path)
+        audit = reader.read(audit_path)
         with self._lock:
             if self._generation == generation:
                 self._view = view

@@ -1,5 +1,6 @@
 """Platform-neutral numeric Audit distributions; no GUI or model dependency."""
 import csv
+import hashlib
 import io
 import math
 import os
@@ -118,16 +119,152 @@ def _audit_metric_snapshot(values, bins: int = 24) -> dict:
     }
 
 
+class AuditAccumulator:
+    """Shared row accumulator; one background owner, bounded in strict mode."""
+
+    def __init__(self, *, max_rows=MAX_AUDIT_ROWS, max_groups=4096):
+        self.max_rows, self.max_groups = max_rows, max_groups
+        values = {name: [] for name, _, _ in _AUDIT_SERIES}
+        calls = failures = component_rows = 0
+        stream_values = {name: [] for name, _, _ in _STREAM_SERIES}
+        stream_reported = stream_invalid = stream_without_text = 0
+        provider_rows = heuristic_rows = 0
+        cache_eligible_rows = cache_observed_rows = 0
+        cache_observed_input = cache_observed_cached = 0
+        prior_templates = {}
+        self._state = (values, calls, failures, component_rows, stream_values, stream_reported, stream_invalid, stream_without_text, provider_rows, heuristic_rows, cache_eligible_rows, cache_observed_rows, cache_observed_input, cache_observed_cached, prior_templates)
+
+    def consume(self, rows, *, strict=False):
+        (values, calls, failures, component_rows, stream_values, stream_reported, stream_invalid, stream_without_text, provider_rows, heuristic_rows, cache_eligible_rows, cache_observed_rows, cache_observed_input, cache_observed_cached, prior_templates) = self._state
+        try:
+            for row in rows:
+                if strict and (calls >= self.max_rows or None in row or any(v is None for v in row.values())):
+                    raise ValueError("audit rows incomplete or over budget")
+                if not isinstance(row, dict):
+                    continue
+                if strict and row.get("ok") not in {"YES", "NO"}:
+                    raise ValueError("unknown audit outcome")
+                calls += 1
+                stream_status, stream_data = _read_stream_observation(row)
+                if stream_status == "invalid":
+                    stream_invalid += 1
+                elif stream_status == "observed":
+                    stream_reported += 1
+                    stream_without_text += int(stream_data[0] is None)
+                    for (name, _, _), value in zip(_STREAM_SERIES, stream_data):
+                        if value is not None:
+                            stream_values[name].append(value)
+                if str(row.get("ok", "")).strip().upper() == "NO":
+                    failures += 1
+                usage_source = str(row.get("token_usage_source", "") or "").strip().lower()
+                has_api_usage = usage_source in {"", "llm_api_usage"}
+                is_slice = bool(str(row.get("prompt_file", "") or "").strip())
+                has_components = False
+                for name, _, as_percent in _AUDIT_SERIES:
+                    if name in {"total_tok_per_s", "effective_tok_per_s_est"}:
+                        continue
+                    if name in {"input_tokens", "output_tokens", "context_usage_ratio"} and not has_api_usage:
+                        continue
+                    if name == "elapsed_seconds" and not is_slice:
+                        continue
+                    parsed = _audit_float(row.get(name))
+                    if parsed is None:
+                        continue
+                    values[name].append(parsed * 100.0 if as_percent else parsed)
+                    if name in {"template_tokens", "task_text_tokens"}:
+                        has_components = True
+                if has_components:
+                    component_rows += 1
+
+                # Derive directly from API In + Out; existing processing_tps
+                # uses API total_tokens and has a different zero-time fallback.
+                if not is_slice or usage_source != "llm_api_usage":
+                    continue
+                # Cache coverage has its own denominator: no dependence
+                # on elapsed/output availability or heuristic estimates.
+                cache_input = _audit_token_count(row.get("input_tokens"))
+                cache_count = _audit_token_count(row.get("cached_input_tokens"))
+                if cache_input is not None and cache_input > 0:
+                    cache_eligible_rows += 1
+                    if (row.get("cached_input_token_source") == "provider_usage"
+                            and cache_count is not None and cache_count <= cache_input):
+                        cache_observed_rows += 1
+                        cache_observed_input += cache_input
+                        cache_observed_cached += cache_count
+                elapsed = _audit_float(row.get("elapsed_seconds"))
+                inp = _audit_float(row.get("input_tokens"))
+                out = _audit_float(row.get("output_tokens"))
+                if elapsed is None or elapsed <= 0 or inp is None or out is None or min(inp, out) < 0:
+                    continue
+                values["total_tok_per_s"].append((inp + out) / elapsed)
+                cached = _audit_float(row.get("cached_input_tokens"))
+                if (row.get("cached_input_token_source") == "provider_usage"
+                        and cached is not None and 0 <= cached <= inp):
+                    values["effective_tok_per_s_est"].append((inp - cached + out) / elapsed)
+                    provider_rows += 1
+                    continue
+
+                task_tokens = _audit_float(row.get("task_text_tokens"))
+                template = _audit_float(row.get("template_tokens"))
+                stage = str(row.get("stage_identity", "") or "").strip()
+                source = str(row.get("prompt_component_token_source", "") or "").strip()
+                if (not stage or not source or task_tokens is None or template is None
+                        or min(task_tokens, template) < 0):
+                    continue
+                group = (row.get("model", ""), row.get("base_url", ""),
+                         row.get("task", ""), stage, source)
+                # Running floor/ceiling avoid O(n²) rescans on long jobs.
+                if strict:
+                    group = hashlib.sha256(repr(group).encode("utf-8")).digest()
+                    if group not in prior_templates and len(prior_templates) >= self.max_groups:
+                        raise ValueError("audit grouping budget exceeded")
+                prior = prior_templates.setdefault(
+                    group, {"count": 0, "min": template, "max": template}
+                )
+                if prior["count"] >= 2:
+                    floor, ceiling = prior["min"], prior["max"]
+                    tolerance = max(1.0, floor * 0.05)
+                    # Not token-level prefix proof. Require stable stage/size
+                    # across prior requests; discount possible reusable floor.
+                    if ceiling - floor <= tolerance and abs(template - floor) <= tolerance:
+                        possibly_cached = min(template, floor * 0.5)
+                        estimated_input = task_tokens + max(0.0, template - possibly_cached)
+                        values["effective_tok_per_s_est"].append((estimated_input + out) / elapsed)
+                        heuristic_rows += 1
+                prior["count"] += 1
+                prior["min"] = min(prior["min"], template)
+                prior["max"] = max(prior["max"], template)
+        finally:
+            self._state = (values, calls, failures, component_rows, stream_values, stream_reported, stream_invalid, stream_without_text, provider_rows, heuristic_rows, cache_eligible_rows, cache_observed_rows, cache_observed_input, cache_observed_cached, prior_templates)
+
+    def snapshot(self):
+        (values, calls, failures, component_rows, stream_values, stream_reported, stream_invalid, stream_without_text, provider_rows, heuristic_rows, cache_eligible_rows, cache_observed_rows, cache_observed_input, cache_observed_cached, prior_templates) = self._state
+        return {
+            "calls": calls, "failures": failures, "component_rows": component_rows,
+            "effective_provider_rows": provider_rows,
+            "effective_heuristic_rows": heuristic_rows,
+            "provider_cache": {
+                "eligible_rows": cache_eligible_rows,
+                "observed_rows": cache_observed_rows,
+                "observed_input_tokens": cache_observed_input,
+                "observed_cached_tokens": cache_observed_cached,
+                "hit_pct": (100 * cache_observed_cached / cache_observed_input
+                            if cache_observed_input else None),
+            },
+            "metrics": {name: _audit_metric_snapshot(values[name]) for name, _, _ in _AUDIT_SERIES},
+            "stream_timing": {
+                "source": _STREAM_SOURCE, "scope": "all_audit_calls",
+                "audit_rows": calls, "observed_rows": stream_reported,
+                "unreported_rows": calls - stream_reported - stream_invalid,
+                "invalid_rows": stream_invalid, "no_text_rows": stream_without_text,
+                "metrics": {key: _audit_metric_snapshot(stream_values[key]) for key, _, _ in _STREAM_SERIES},
+            },
+        }
+
+
 def load_llm_audit_distribution(audit_path: str, *, strict=False) -> dict:
-    """Read the append-only numeric audit metadata; never read prompt/output payloads."""
-    values = {name: [] for name, _, _ in _AUDIT_SERIES}
-    calls = failures = component_rows = 0
-    stream_values = {name: [] for name, _, _ in _STREAM_SERIES}
-    stream_reported = stream_invalid = stream_without_text = 0
-    provider_rows = heuristic_rows = 0
-    cache_eligible_rows = cache_observed_rows = 0
-    cache_observed_input = cache_observed_cached = 0
-    prior_templates = {}
+    """Read existing Audit snapshot; preserve desktop permissive default."""
+    acc = AuditAccumulator(max_rows=MAX_AUDIT_ROWS)
     if audit_path:
         try:
             with (_strict_audit_snapshot(audit_path) if strict else
@@ -136,126 +273,11 @@ def load_llm_audit_distribution(audit_path: str, *, strict=False) -> dict:
                 if strict and (not reader.fieldnames or len(set(reader.fieldnames)) != len(reader.fieldnames)
                                or not {"ok", "prompt_file", "token_usage_source"}.issubset(reader.fieldnames)):
                     raise ValueError("invalid audit schema")
-                for row in reader:
-                    if strict and (calls >= MAX_AUDIT_ROWS or None in row or any(v is None for v in row.values())):
-                        raise ValueError("audit rows incomplete or over budget")
-                    if not isinstance(row, dict):
-                        continue
-                    if strict and row.get("ok") not in {"YES", "NO"}:
-                        raise ValueError("unknown audit outcome")
-                    calls += 1
-                    stream_status, stream_data = _read_stream_observation(row)
-                    if stream_status == "invalid":
-                        stream_invalid += 1
-                    elif stream_status == "observed":
-                        stream_reported += 1
-                        stream_without_text += int(stream_data[0] is None)
-                        for (name, _, _), value in zip(_STREAM_SERIES, stream_data):
-                            if value is not None:
-                                stream_values[name].append(value)
-                    if str(row.get("ok", "")).strip().upper() == "NO":
-                        failures += 1
-                    usage_source = str(row.get("token_usage_source", "") or "").strip().lower()
-                    has_api_usage = usage_source in {"", "llm_api_usage"}
-                    is_slice = bool(str(row.get("prompt_file", "") or "").strip())
-                    has_components = False
-                    for name, _, as_percent in _AUDIT_SERIES:
-                        if name in {"total_tok_per_s", "effective_tok_per_s_est"}:
-                            continue
-                        if name in {"input_tokens", "output_tokens", "context_usage_ratio"} and not has_api_usage:
-                            continue
-                        if name == "elapsed_seconds" and not is_slice:
-                            continue
-                        parsed = _audit_float(row.get(name))
-                        if parsed is None:
-                            continue
-                        values[name].append(parsed * 100.0 if as_percent else parsed)
-                        if name in {"template_tokens", "task_text_tokens"}:
-                            has_components = True
-                    if has_components:
-                        component_rows += 1
-
-                    # Derive directly from API In + Out; existing processing_tps
-                    # uses API total_tokens and has a different zero-time fallback.
-                    if not is_slice or usage_source != "llm_api_usage":
-                        continue
-                    # Cache coverage has its own denominator: no dependence
-                    # on elapsed/output availability or heuristic estimates.
-                    cache_input = _audit_token_count(row.get("input_tokens"))
-                    cache_count = _audit_token_count(row.get("cached_input_tokens"))
-                    if cache_input is not None and cache_input > 0:
-                        cache_eligible_rows += 1
-                        if (row.get("cached_input_token_source") == "provider_usage"
-                                and cache_count is not None and cache_count <= cache_input):
-                            cache_observed_rows += 1
-                            cache_observed_input += cache_input
-                            cache_observed_cached += cache_count
-                    elapsed = _audit_float(row.get("elapsed_seconds"))
-                    inp = _audit_float(row.get("input_tokens"))
-                    out = _audit_float(row.get("output_tokens"))
-                    if elapsed is None or elapsed <= 0 or inp is None or out is None or min(inp, out) < 0:
-                        continue
-                    values["total_tok_per_s"].append((inp + out) / elapsed)
-                    cached = _audit_float(row.get("cached_input_tokens"))
-                    if (row.get("cached_input_token_source") == "provider_usage"
-                            and cached is not None and 0 <= cached <= inp):
-                        values["effective_tok_per_s_est"].append((inp - cached + out) / elapsed)
-                        provider_rows += 1
-                        continue
-
-                    task_tokens = _audit_float(row.get("task_text_tokens"))
-                    template = _audit_float(row.get("template_tokens"))
-                    stage = str(row.get("stage_identity", "") or "").strip()
-                    source = str(row.get("prompt_component_token_source", "") or "").strip()
-                    if (not stage or not source or task_tokens is None or template is None
-                            or min(task_tokens, template) < 0):
-                        continue
-                    group = (row.get("model", ""), row.get("base_url", ""),
-                             row.get("task", ""), stage, source)
-                    # Running floor/ceiling avoid O(n²) rescans on long jobs.
-                    prior = prior_templates.setdefault(
-                        group, {"count": 0, "min": template, "max": template}
-                    )
-                    if prior["count"] >= 2:
-                        floor, ceiling = prior["min"], prior["max"]
-                        tolerance = max(1.0, floor * 0.05)
-                        # Not token-level prefix proof. Require stable stage/size
-                        # across prior requests; discount possible reusable floor.
-                        if ceiling - floor <= tolerance and abs(template - floor) <= tolerance:
-                            possibly_cached = min(template, floor * 0.5)
-                            estimated_input = task_tokens + max(0.0, template - possibly_cached)
-                            values["effective_tok_per_s_est"].append((estimated_input + out) / elapsed)
-                            heuristic_rows += 1
-                    prior["count"] += 1
-                    prior["min"] = min(prior["min"], template)
-                    prior["max"] = max(prior["max"], template)
+                acc.consume(reader, strict=strict)
         except (OSError, csv.Error, UnicodeError):
             if strict:
                 raise
-            pass
-    return {
-        "calls": calls, "failures": failures, "component_rows": component_rows,
-        "effective_provider_rows": provider_rows,
-        "effective_heuristic_rows": heuristic_rows,
-        "provider_cache": {
-            "eligible_rows": cache_eligible_rows,
-            "observed_rows": cache_observed_rows,
-            "observed_input_tokens": cache_observed_input,
-            "observed_cached_tokens": cache_observed_cached,
-            "hit_pct": (100 * cache_observed_cached / cache_observed_input
-                        if cache_observed_input else None),
-        },
-        "metrics": {name: _audit_metric_snapshot(values[name]) for name, _, _ in _AUDIT_SERIES},
-        "stream_timing": {
-            "source": _STREAM_SOURCE, "scope": "all_audit_calls",
-            "audit_rows": calls, "observed_rows": stream_reported,
-            "unreported_rows": calls - stream_reported - stream_invalid,
-            "invalid_rows": stream_invalid, "no_text_rows": stream_without_text,
-            "metrics": {key: _audit_metric_snapshot(stream_values[key]) for key, _, _ in _STREAM_SERIES},
-        },
-    }
-
-
+    return acc.snapshot()
 
 
 def _strict_audit_snapshot(audit_path):
@@ -288,35 +310,40 @@ def load_public_audit(audit_path):
         return {"status": "waiting_for_audit"}
     try:
         stats = load_llm_audit_distribution(audit_path, strict=True)
-        # A derived number may overflow even when the original CSV value is finite.
-        def safe_number(value):
-            if type(value) not in (int, float) or not math.isfinite(value):
-                raise ValueError("invalid metric")
-            return value
-        metrics = {}
-        for key, _, _ in _AUDIT_SERIES:
-            value = stats["metrics"][key]
-            metrics[key] = {"count": value["count"],
-                            "p50": safe_number(value["p50"]) if value["count"] else None,
-                            "p95": safe_number(value["p95"]) if value["count"] else None,
-                            "max": safe_number(value["max"]) if value["count"] else None}
-        stream = dict(stats["stream_timing"])
-        stream["metrics"] = {
-            key: {"count": v["count"],
-                  **{field: safe_number(v[field]) if v["count"] else None
-                     for field in ("p50", "p95", "max")}}
-            for key, v in stream["metrics"].items()
-        }
-        return {"status": "observed", "calls": stats["calls"],
-                "failures": stats["failures"], "metrics": metrics,
-                "provider_cache": stats["provider_cache"],
-                "effective_provider_rows": stats["effective_provider_rows"],
-                "effective_heuristic_rows": stats["effective_heuristic_rows"],
-                "stream_timing": stream,
-                "phase_metrics": {"ttft": stream["metrics"]["stream_ttft_seconds"]["p50"],
-                                  "prefill": None, "decode": None},
-                "scope": "bounded_current_audit_snapshot"}
+        return project_public_audit(stats)
     except FileNotFoundError:
         return {"status": "waiting_for_audit"}
     except (OSError, ValueError, UnicodeError, csv.Error, OverflowError):
         return {"status": "unavailable_or_over_budget"}
+
+
+def project_public_audit(stats):
+    """Allowlisted numeric projection, shared by snapshot and incremental readers."""
+    # A derived number may overflow even when the original CSV value is finite.
+    def safe_number(value):
+        if type(value) not in (int, float) or not math.isfinite(value):
+            raise ValueError("invalid metric")
+        return value
+    metrics = {}
+    for key, _, _ in _AUDIT_SERIES:
+        value = stats["metrics"][key]
+        metrics[key] = {"count": value["count"],
+                        "p50": safe_number(value["p50"]) if value["count"] else None,
+                        "p95": safe_number(value["p95"]) if value["count"] else None,
+                        "max": safe_number(value["max"]) if value["count"] else None}
+    stream = dict(stats["stream_timing"])
+    stream["metrics"] = {
+        key: {"count": v["count"],
+              **{field: safe_number(v[field]) if v["count"] else None
+                 for field in ("p50", "p95", "max")}}
+        for key, v in stream["metrics"].items()
+    }
+    return {"status": "observed", "calls": stats["calls"],
+            "failures": stats["failures"], "metrics": metrics,
+            "provider_cache": stats["provider_cache"],
+            "effective_provider_rows": stats["effective_provider_rows"],
+            "effective_heuristic_rows": stats["effective_heuristic_rows"],
+            "stream_timing": stream,
+            "phase_metrics": {"ttft": stream["metrics"]["stream_ttft_seconds"]["p50"],
+                              "prefill": None, "decode": None},
+            "scope": "bounded_current_audit_snapshot"}

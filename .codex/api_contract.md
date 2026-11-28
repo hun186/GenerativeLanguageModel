@@ -197,3 +197,4 @@ Accepted through #239; historical chronology is archived.
 - Prior exact contract: `.codex/archive/api_contract.md-20261128-web05a.md` (Git blob `2053d5a90d56b8a035fae3b68102a5e4a9f21b84`).
 - WEB-05B2 `audit.stream_timing`: all-Audit denominator, observed/unreported/invalid/no_text (subset), source `client_monotonic_completed_sse`; independent metric count/P50/P95/max for TTFT, first thinking/content, chunks. Missing null, valid zero retained. `phase_metrics.ttft` is client P50; native prefill/decode null.
 - Prior exact contract: `.codex/archive/api_contract.md-20261128-web05b2.md` (Git blob `93a196eac802aa1c4bd869bea1043afecd2b6c51`).
+- WEB-05C1 supersedes Web 8 MiB/20k snapshot with 4 MiB per read, 512 MiB file, 200k rows, 4096 template groups. `catching_up` reports scanned/total bytes only; no partial totals. Complete results exact; unchanged file reuses cached projection. Append-only trust boundary, not historical-byte integrity proof.

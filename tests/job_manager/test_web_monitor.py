@@ -309,3 +309,66 @@ def test_stream_timing_http_coverage_and_no_inferred_native_phase(tmp_path):
         assert b"PRIVATE" not in raw
     finally:
         client.close()
+
+
+def test_incremental_audit_matches_full_snapshot_and_reuses_unchanged_result(tmp_path, monkeypatch):
+    import csv
+    from czjLLM.job_manager import audit_distribution as core
+    from czjLLM.job_manager import audit_distribution_incremental as inc
+    audit = tmp_path / "llm_call_audit_20261102-1.csv"
+    fields = ["ok", "prompt_file", "token_usage_source", "input_tokens", "output_tokens",
+              "elapsed_seconds", "error", "model", "base_url", "task", "stage_identity",
+              "task_text_tokens", "template_tokens", "prompt_component_token_source"]
+    rows = [["YES", "PRIVATE", "llm_api_usage", 100, 20, i+1, "quoted\nline", "m",
+             "url", "task", "stage", 70, 30, "tokenizer"] for i in range(8)]
+    with audit.open("w", newline="", encoding="utf-8") as fp:
+        writer = csv.writer(fp)
+        writer.writerow(fields)
+        writer.writerows(rows)
+    monkeypatch.setattr(inc, "MAX_SCAN_BYTES", 256)
+    reader = inc.IncrementalAuditReader()
+    seen = []
+    for _ in range(20):
+        result = reader.read(str(audit))
+        if result["status"] == "observed":
+            break
+        assert result["status"] == "catching_up" and "calls" not in result
+        seen.append(result["scanned_bytes"])
+    assert seen and result["status"] == "observed"
+    full = core.load_public_audit(audit)
+    assert result["metrics"] == full["metrics"]
+    assert result["stream_timing"] == full["stream_timing"]
+    assert result["effective_heuristic_rows"] == full["effective_heuristic_rows"] == 6
+    assert "PRIVATE" not in json.dumps(result)
+    with monkeypatch.context() as ctx:
+        def no_sort():
+            raise AssertionError("unchanged file must reuse cached stats")
+        ctx.setattr(reader.acc, "snapshot", no_sort)
+        assert reader.read(str(audit)) == result
+    with audit.open("a", newline="", encoding="utf-8") as fp:
+        csv.writer(fp).writerow(rows[0])
+    assert reader.read(str(audit))["calls"] == 9
+
+
+def test_incremental_audit_incomplete_tail_replacement_and_budget(tmp_path, monkeypatch):
+    from czjLLM.job_manager import audit_distribution_incremental as inc
+    path = tmp_path / "llm_call_audit_20261102-1.csv"
+    header = "ok,prompt_file,token_usage_source,elapsed_seconds\n"
+    path.write_text(header + "YES,x,llm_api_usage,1\n", encoding="utf-8")
+    reader = inc.IncrementalAuditReader()
+    assert reader.read(str(path))["calls"] == 1
+    with path.open("a", encoding="utf-8") as fp:
+        fp.write("NO,x,llm_api_usage,2")
+    pending = reader.read(str(path))
+    assert pending["status"] == "catching_up" and "calls" not in pending
+    with path.open("a", encoding="utf-8") as fp:
+        fp.write("\n")
+    assert reader.read(str(path))["failures"] == 1
+    replacement = tmp_path / "replacement.csv"
+    replacement.write_text(header + "YES,x,llm_api_usage,9\n", encoding="utf-8")
+    replacement.replace(path)
+    assert reader.read(str(path))["metrics"]["elapsed_seconds"]["p50"] == 9
+    monkeypatch.setattr(inc, "MAX_ROWS", 1)
+    other = tmp_path / "llm_call_audit_20261102-2.csv"
+    other.write_text(header + "YES,x,llm_api_usage,1\nYES,x,llm_api_usage,2\n", encoding="utf-8")
+    assert reader.read(str(other)) == {"status": "unavailable_or_over_budget"}
