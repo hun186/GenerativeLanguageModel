@@ -19,3 +19,11 @@ Never expose arbitrary files, credentials, prompt text, raw log messages,
 repair samples, or exception payloads by default. No network control or
 external dependencies are added in WEB-01. Completion counters are not
 independent SQL/ES sink readback. Browser lifetime must not own run lifetime.
+
+## Scheduled deployment architecture (proposed priority)
+Per-run Web listeners collide when scheduled GLM invocations overlap. Prioritize
+an independent per-host Central Monitor, a bounded run registry and local IPC
+before remote controls and multi-host aggregation. Existing projections remain
+reusable per run. Automatic persistent local PKI belongs to the central daemon.
+See [central-monitor design](web_monitor_central_design.md). No central mode or
+automatic certificate ENV setting is active yet.
